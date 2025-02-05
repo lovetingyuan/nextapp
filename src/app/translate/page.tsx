@@ -7,7 +7,7 @@ import { useCompletion } from 'ai/react'
 
 export default function Translate() {
   const [isCopied, setIsCopied] = useState(false)
-  const { completion, input, handleInputChange, handleSubmit, isLoading } = useCompletion({
+  const { completion, input, handleInputChange, error, handleSubmit, isLoading } = useCompletion({
     api: '/api/completion',
   })
 
@@ -30,7 +30,7 @@ export default function Translate() {
     }
   }
   return (
-    <div className="p-4 mb-10 sm:p-10 max-w-screen-md mx-auto">
+    <div className="px-4 pt-4 pb-12 sm:p-10 max-w-screen-md mx-auto">
       <h2 className="text-2xl font-normal">
         中英小翻译
         <Languages className="w-6 h-6 inline-block ml-2" />
@@ -51,21 +51,24 @@ export default function Translate() {
         </Button>
       </form>
 
-      <div className="group border border-gray-200 rounded-md p-4 mt-8 flow-root relative">
-        {isLoading && !completion && (
-          <LoaderPinwheel className="animate-spin" color="cornflowerblue" />
-        )}
-        <pre className="whitespace-pre-wrap">{completion}</pre>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="invisible group-hover:visible absolute top-0 right-0 p-0"
-          onClick={handleCopy}
-          title="copy"
-        >
-          {isCopied ? <Check /> : <Copy />}
-        </Button>
-      </div>
+      {isLoading || completion || error ? (
+        <div className="group border border-gray-200 rounded-md p-4 mt-8 flow-root relative">
+          {isLoading && !completion && (
+            <LoaderPinwheel className="animate-spin" color="cornflowerblue" />
+          )}
+          <pre className="whitespace-pre-wrap">{completion}</pre>
+          {error ? <p className="text-red-600 italic">Error: {error.message}</p> : null}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="invisible group-hover:visible absolute top-0 right-0 p-0"
+            onClick={handleCopy}
+            title="copy"
+          >
+            {isCopied ? <Check /> : <Copy />}
+          </Button>
+        </div>
+      ) : null}
     </div>
   )
 }

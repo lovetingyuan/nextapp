@@ -6,10 +6,21 @@ import { setupDevPlatform } from '@cloudflare/next-on-pages/next-dev'
 if (process.env.NODE_ENV === 'development') {
   await setupDevPlatform()
 }
+const buildDate = new Date().toLocaleString('zh-CN', {
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+  hour: '2-digit',
+  minute: '2-digit',
+  second: '2-digit',
+})
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   /* config options here */
+  env: {
+    NEXT_PUBLIC_BUILD_DATE: buildDate,
+  },
 }
 
 export default nextConfig
