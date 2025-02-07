@@ -1,4 +1,10 @@
 import { setupDevPlatform } from '@cloudflare/next-on-pages/next-dev'
+import cp from 'node:child_process'
+
+import { createRequire } from 'module'
+const require = createRequire(import.meta.url)
+
+const pkg = require('./package.json')
 
 // Here we use the @cloudflare/next-on-pages next-dev module to allow us to use bindings during local development
 // (when running the application with `next dev`), for more information see:
@@ -6,6 +12,9 @@ import { setupDevPlatform } from '@cloudflare/next-on-pages/next-dev'
 if (process.env.NODE_ENV === 'development') {
   await setupDevPlatform()
 }
+
+const shortHash8 = cp.execSync('git rev-parse --short=8 HEAD').toString().trim()
+
 const buildDate = new Date().toLocaleString('zh-CN', {
   year: 'numeric',
   month: '2-digit',
@@ -20,6 +29,7 @@ const nextConfig = {
   /* config options here */
   env: {
     NEXT_PUBLIC_BUILD_DATE: buildDate,
+    NEXT_PUBLIC_APP_VERSION: pkg.version + '@' + shortHash8,
   },
 }
 

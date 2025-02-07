@@ -3,7 +3,7 @@
 export const runtime = 'edge'
 
 export async function GET() {
-  const responseText = 'Hello World'
+  const responseText = 'Hello World' + process.env.TEST_ENV
 
   // In the edge runtime you can use Bindings that are available in your application
   // (for more details see:

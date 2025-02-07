@@ -1,11 +1,11 @@
 import { Languages } from 'lucide-react'
 
-import type { Metadata } from 'next'
 import TranslateForm from './_components/TranslateForm'
+import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Translate', // 设置页面标题
-  description: 'translate english helper', // 可选：设置页面描述
+  title: 'Translate',
+  description: 'translate helper made by tingyuan',
 }
 
 export default function Translate() {

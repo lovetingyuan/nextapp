@@ -5,6 +5,7 @@ import React from 'react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Check, Copy, LoaderPinwheel } from 'lucide-react'
+import { track } from '@/lib/utils'
 
 export default function TranslateForm() {
   const [isCopied, setIsCopied] = React.useState(false)
@@ -32,7 +33,13 @@ export default function TranslateForm() {
   }
   return (
     <>
-      <form onSubmit={handleSubmit} ref={formRef}>
+      <form
+        onSubmit={evt => {
+          track('action-translate-submit-click')
+          handleSubmit(evt)
+        }}
+        ref={formRef}
+      >
         <Textarea
           placeholder="Enter text to translate"
           className="w-full min-h-60 mt-6 field-sizing-content"
