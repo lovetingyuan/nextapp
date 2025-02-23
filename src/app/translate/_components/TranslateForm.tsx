@@ -142,7 +142,12 @@ export default function TranslateForm() {
           </Button>
           {loadAudioError && <p className="text-red-500 text-sm mt-3">{loadAudioError}</p>}
           {audioUrl ? (
-            <audio className="mt-5 w-[500px]" ref={audioRef} src={audioUrl} controls></audio>
+            <audio
+              className="mt-5 w-full sm:w-[500px]"
+              ref={audioRef}
+              src={audioUrl}
+              controls
+            ></audio>
           ) : null}
         </div>
       )}
