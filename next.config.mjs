@@ -31,6 +31,9 @@ const nextConfig = {
     NEXT_PUBLIC_BUILD_DATE: buildDate,
     NEXT_PUBLIC_APP_VERSION: pkg.version + '@' + shortHash8,
   },
+  images: {
+    remotePatterns: [{ hostname: 'github.com' }],
+  },
 }
 
 export default nextConfig

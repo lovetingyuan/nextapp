@@ -4,7 +4,7 @@ import { useCompletion } from 'ai/react'
 import React from 'react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import { Check, Copy, LoaderPinwheel } from 'lucide-react'
+import { Check, Copy, Languages, LoaderPinwheel, Volume2 } from 'lucide-react'
 import { track } from '@/lib/utils'
 
 export default function TranslateForm() {
@@ -31,12 +31,22 @@ export default function TranslateForm() {
       formRef.current?.requestSubmit()
     }
   }
+  const audioRef = React.useRef<HTMLAudioElement>(null)
+  const [loadingAudio, setLoadingAudio] = React.useState(false)
+  const [loadAudioError, setLoadAudioError] = React.useState('')
+  const [audioUrl, setAudioUrl] = React.useState('')
   return (
     <>
       <form
         onSubmit={evt => {
           track('action-translate-submit-click')
           handleSubmit(evt)
+          setLoadAudioError('')
+          setLoadingAudio(false)
+          if (audioUrl) {
+            URL.revokeObjectURL(audioUrl)
+            setAudioUrl('')
+          }
         }}
         ref={formRef}
       >
@@ -55,6 +65,7 @@ export default function TranslateForm() {
             <span>Translating...</span>
           ) : (
             <span>
+              <Languages className="inline-block mr-1 align-middle" />
               Translate (<kbd>Ctrl</kbd>+<kbd>Enter</kbd>)
             </span>
           )}
@@ -79,6 +90,60 @@ export default function TranslateForm() {
           </Button>
         </div>
       ) : null}
+      {!isLoading && completion && (
+        <div>
+          <Button
+            variant={'secondary'}
+            className={`mt-6 w-full ${audioUrl ? 'hidden' : ''}`}
+            size="lg"
+            onClick={async () => {
+              if (loadingAudio) {
+                return
+              }
+              setLoadingAudio(true)
+              const response = await fetch('/api/play-sound', {
+                method: 'POST',
+                body: JSON.stringify({ text: completion }),
+              }).catch(() => {
+                setLoadAudioError('Failed to load audio')
+                setLoadingAudio(false)
+              })
+              if (!response) {
+                return
+              }
+              if (!response.ok) {
+                setLoadAudioError('Failed to load audio, ' + response.status)
+                return
+              }
+              const audioBlob = await response.blob()
+              // 创建临时的URL
+              const audioUrl = URL.createObjectURL(audioBlob)
+              setAudioUrl(audioUrl)
+              // 设置到audio标签
+              setTimeout(() => {
+                if (audioRef.current) {
+                  audioRef.current.play()
+                }
+              }, 100)
+              setLoadingAudio(false)
+              setLoadAudioError('')
+            }}
+          >
+            {loadingAudio ? (
+              'Loading...'
+            ) : (
+              <>
+                <Volume2 />
+                Play (English Only)
+              </>
+            )}
+          </Button>
+          {loadAudioError && <p className="text-red-500 text-sm">{loadAudioError}</p>}
+          {audioUrl ? (
+            <audio className="mt-5 w-[500px]" ref={audioRef} src={audioUrl} controls></audio>
+          ) : null}
+        </div>
+      )}
     </>
   )
 }
