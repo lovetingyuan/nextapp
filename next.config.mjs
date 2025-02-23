@@ -34,6 +34,7 @@ const nextConfig = {
   images: {
     remotePatterns: [{ hostname: 'github.com' }],
   },
+  serverExternalPackages: ['module'],
 }
 
 export default nextConfig

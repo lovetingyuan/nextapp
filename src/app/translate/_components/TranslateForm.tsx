@@ -105,14 +105,16 @@ export default function TranslateForm() {
                 method: 'POST',
                 body: JSON.stringify({ text: completion }),
               }).catch(() => {
-                setLoadAudioError('Failed to load audio')
-                setLoadingAudio(false)
+                return null
               })
               if (!response) {
+                setLoadAudioError('Failed to load audio')
+                setLoadingAudio(false)
                 return
               }
               if (!response.ok) {
                 setLoadAudioError('Failed to load audio, ' + response.status)
+                setLoadingAudio(false)
                 return
               }
               const audioBlob = await response.blob()
@@ -138,7 +140,7 @@ export default function TranslateForm() {
               </>
             )}
           </Button>
-          {loadAudioError && <p className="text-red-500 text-sm">{loadAudioError}</p>}
+          {loadAudioError && <p className="text-red-500 text-sm mt-3">{loadAudioError}</p>}
           {audioUrl ? (
             <audio className="mt-5 w-[500px]" ref={audioRef} src={audioUrl} controls></audio>
           ) : null}
