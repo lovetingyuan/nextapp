@@ -1,10 +1,10 @@
 'use client'
 
 import { useCompletion } from 'ai/react'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import { Check, Copy, Languages, LoaderPinwheel, Volume2 } from 'lucide-react'
+import { Check, Copy, Languages, Loader2, LoaderPinwheel, Volume2 } from 'lucide-react'
 import { track } from '@/lib/utils'
 
 export default function TranslateForm() {
@@ -35,6 +35,57 @@ export default function TranslateForm() {
   const [loadingAudio, setLoadingAudio] = React.useState(false)
   const [loadAudioError, setLoadAudioError] = React.useState('')
   const [audioUrl, setAudioUrl] = React.useState('')
+  const inputRef = React.useRef<HTMLTextAreaElement>(null)
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (document.activeElement === inputRef.current) {
+        return
+      }
+      if (event.key === '/') {
+        inputRef.current?.focus()
+        event.preventDefault()
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [])
+
+  const loadAudio = async () => {
+    if (loadingAudio) {
+      return
+    }
+    setLoadingAudio(true)
+    const response = await fetch('/api/play-sound', {
+      method: 'POST',
+      body: JSON.stringify({ text: completion }),
+    }).catch(() => {
+      return null
+    })
+    if (!response) {
+      setLoadAudioError('Failed to load audio')
+      setLoadingAudio(false)
+      return
+    }
+    if (!response.ok) {
+      setLoadAudioError('Failed to load audio, ' + response.status)
+      setLoadingAudio(false)
+      return
+    }
+    const audioBlob = await response.blob()
+    // 创建临时的URL
+    const audioUrl = URL.createObjectURL(audioBlob)
+    setAudioUrl(audioUrl)
+    // 设置到audio标签
+    setTimeout(() => {
+      if (audioRef.current) {
+        audioRef.current.play()
+      }
+    }, 100)
+    setLoadingAudio(false)
+    setLoadAudioError('')
+  }
   return (
     <>
       <form
@@ -59,6 +110,7 @@ export default function TranslateForm() {
           onKeyDown={handleKeyDown}
           disabled={isLoading}
           onChange={handleInputChange}
+          ref={inputRef}
         />
         <Button type="submit" disabled={isLoading} className="mt-8 w-full" size="lg">
           {isLoading ? (
@@ -96,43 +148,13 @@ export default function TranslateForm() {
             variant={'secondary'}
             className={`mt-6 w-full ${audioUrl ? 'hidden' : ''}`}
             size="lg"
-            onClick={async () => {
-              if (loadingAudio) {
-                return
-              }
-              setLoadingAudio(true)
-              const response = await fetch('/api/play-sound', {
-                method: 'POST',
-                body: JSON.stringify({ text: completion }),
-              }).catch(() => {
-                return null
-              })
-              if (!response) {
-                setLoadAudioError('Failed to load audio')
-                setLoadingAudio(false)
-                return
-              }
-              if (!response.ok) {
-                setLoadAudioError('Failed to load audio, ' + response.status)
-                setLoadingAudio(false)
-                return
-              }
-              const audioBlob = await response.blob()
-              // 创建临时的URL
-              const audioUrl = URL.createObjectURL(audioBlob)
-              setAudioUrl(audioUrl)
-              // 设置到audio标签
-              setTimeout(() => {
-                if (audioRef.current) {
-                  audioRef.current.play()
-                }
-              }, 100)
-              setLoadingAudio(false)
-              setLoadAudioError('')
-            }}
+            onClick={loadAudio}
           >
             {loadingAudio ? (
-              'Loading...'
+              <>
+                <Loader2 className="animate-spin" />
+                Loading...
+              </>
             ) : (
               <>
                 <Volume2 />

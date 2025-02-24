@@ -19,7 +19,7 @@ export default function Translate() {
         <Languages className="w-6 h-6 inline-block ml-2 mr-2" />
         <HoverCard>
           <HoverCardTrigger asChild>
-            <Button variant="outline" size="icon">
+            <Button variant="outline" size="icon" className="scale-75">
               <CircleHelp />
             </Button>
           </HoverCardTrigger>
@@ -30,7 +30,7 @@ export default function Translate() {
             <a
               href="https://github.com/lovetingyuan/nextapp"
               target="_blank"
-              className="float-right block"
+              className="float-right block dark:invert"
             >
               <Image
                 title="Github"
