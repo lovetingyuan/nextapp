@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server'
 
 export const runtime = 'edge'
 
-export async function POST(req: NextRequest) {
+export async function _POST(req: NextRequest) {
   const { text } = (await req.json()) as { text: string }
 
   const url = 'https://api.deepgram.com/v1/speak?model=aura-asteria-en'
@@ -27,5 +27,20 @@ export async function POST(req: NextRequest) {
       throw new Error('Failed to make request to deepgram:' + response.statusText)
     }
     return response
+  })
+}
+
+export async function POST(req: NextRequest) {
+  const { text } = (await req.json()) as { text: string }
+  return await fetch('https://ttsapi.site/v1/audio/speech', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      input: text,
+      voice: 'alloy',
+      // instructions: 'Speak in a cheerful and upbeat tone.'  // Optional
+    }),
   })
 }
