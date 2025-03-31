@@ -15,13 +15,27 @@ A key point to note is that you should only provide the translation result and n
 export async function POST(req: Request) {
   const { prompt }: { prompt: string } = await req.json()
 
-  const result = await streamText({
-    // model: deepseek('deepseek-reasoner'),
-    // model: openrouter('google/gemini-2.0-pro-exp-02-05:free'),
-    model: openrouter('google/gemini-2.0-flash-lite-preview-02-05:free'),
-    system: systemPrompt,
-    prompt: 'Help me translate this\n' + prompt,
-  })
+  try {
+    const result = await streamText({
+      // model: deepseek('deepseek-reasoner'),
+      // model: openrouter('google/gemini-2.0-pro-exp-02-05:free'),
+      model: openrouter('google/gemini-2.0-flash-exp:free'),
+      system: systemPrompt,
+      prompt: 'Help me translate this\n' + prompt,
+    })
 
-  return result.toDataStreamResponse()
+    return result.toDataStreamResponse({
+      getErrorMessage(err) {
+        console.error('AI-error_translate', err)
+        return 'Translate AI chunk error, ' + err
+      },
+    })
+  } catch (err) {
+    return Response.json(
+      { error: err },
+      {
+        status: 500,
+      }
+    )
+  }
 }
