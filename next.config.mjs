@@ -32,9 +32,13 @@ const nextConfig = {
     NEXT_PUBLIC_APP_VERSION: pkg.version + '@' + shortHash8,
   },
   images: {
-    remotePatterns: [{ hostname: 'github.com' }],
+    remotePatterns: [{ hostname: 'github.com' }, { hostname: 'images.unsplash.com' }],
   },
-  serverExternalPackages: ['module'],
+  serverExternalPackages: ['module', 'resend'],
+  experimental: {
+    useCache: true,
+    // nodeMiddleware: true,
+  },
 }
 
 export default nextConfig

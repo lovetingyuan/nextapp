@@ -4,9 +4,12 @@ export default function Home() {
   return (
     <main className="p-20">
       <h2 className="text-xl">一些app</h2>
-      <ul className="list-disc list-inside my-10">
+      <ul className="list-disc list-inside my-10 space-y-3">
         <li>
           <Link href={'/translate'}>Translate</Link>
+        </li>
+        <li>
+          <Link href={'/music/app'}>Music</Link>
         </li>
       </ul>
     </main>

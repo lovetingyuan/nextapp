@@ -1,6 +1,6 @@
 'use client'
 
-import { useCompletion } from 'ai/react'
+import { useCompletion } from '@ai-sdk/react'
 import React, { useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
@@ -10,10 +10,11 @@ import { track } from '@/lib/utils'
 export default function TranslateForm() {
   const [isCopied, setIsCopied] = React.useState(false)
   const { completion, input, handleInputChange, error, handleSubmit, isLoading } = useCompletion({
-    api: '/api/completion',
+    api: '/api/translate',
   })
 
   const formRef = React.useRef<HTMLFormElement>(null)
+  const abortController = React.useRef<AbortController | null>(null)
 
   const handleCopy = async () => {
     if (isCopied) {
@@ -57,9 +58,13 @@ export default function TranslateForm() {
       return
     }
     setLoadingAudio(true)
-    const response = await fetch('/api/play-sound', {
+    if (!abortController.current) {
+      abortController.current = new AbortController()
+    }
+    const response = await fetch('/api/translate/play', {
       method: 'POST',
       body: JSON.stringify({ text: completion }),
+      signal: abortController.current.signal,
     }).catch(() => {
       return null
     })
@@ -94,6 +99,10 @@ export default function TranslateForm() {
           handleSubmit(evt)
           setLoadAudioError('')
           setLoadingAudio(false)
+          if (abortController.current) {
+            abortController.current.abort()
+            abortController.current = null
+          }
           if (audioUrl) {
             URL.revokeObjectURL(audioUrl)
             setAudioUrl('')
@@ -158,7 +167,7 @@ export default function TranslateForm() {
             ) : (
               <>
                 <Volume2 />
-                Play (English Only)
+                Play
               </>
             )}
           </Button>

@@ -1,10 +1,11 @@
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
-import { Toaster } from '@/components/ui/toaster'
-import { ModeToggle, ThemeProvider } from '../components/ThemeProvider'
+// import { Toaster } from '@/components/ui/toaster'
+import { ThemeProvider } from '../components/ThemeProvider'
 import Script from 'next/script'
 import { track } from '@/lib/utils'
+import { Toaster as SonnerToaster } from '@/components/ui/sonner'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -66,24 +67,20 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen relative`}
       >
-        <Script
+        {/* <Script
           id="amplitude-script"
           src="https://cdn.amplitude.com/script/3f92a46a7510070dce089235b9429001.js"
           strategy="beforeInteractive"
         />
-        <Script id="amplitude-init">{`(${initAmplitude}())`}</Script>
+        <Script id="amplitude-init">{`(${initAmplitude}())`}</Script> */}
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
+          <SonnerToaster />
           {children}
-          <Toaster />
-          <ModeToggle />
-          <time className="absolute bottom-0 w-full p-1 select-none text-xs text-slate-500 italic block text-center">
-            {process.env.NEXT_PUBLIC_BUILD_DATE}
-          </time>
         </ThemeProvider>
       </body>
     </html>
