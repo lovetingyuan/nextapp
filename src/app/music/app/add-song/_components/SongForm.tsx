@@ -27,7 +27,6 @@ import { Tooltip } from '@/components/ui/tooltip'
 import { CircleHelp, X } from 'lucide-react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-// import { getMusicMp3TempUrl, uploadMusicMp3 } from '@/actions/r2'
 
 const MAX_FILE_SIZE = 1024 * 1024 // 1MB for image
 const MAX_AUDIO_FILE_SIZE = 10 * 1024 * 1024 // 10MB for audio
@@ -75,7 +74,6 @@ export const formSchema = z
   })
   .refine(
     data => {
-      console.log(432432, data)
       // 如果名称和年龄都存在，返回false
       if (data.tab === 'third' && !data.thirdUrl) {
         return false
@@ -257,25 +255,45 @@ export function CreateSongForm() {
                 name="thirdUrl"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="flex py-1 items-center gap-2">
+                    <FormLabel className="flex   items-center gap-2">
                       <span>歌曲网址 *</span>
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <CircleHelp className="w-4 h-4 cursor-pointer" />
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>目前支持填写Bilibili和Youtube的网址，例如：</p>
-                            <p> Bilibili: https://www.bilibili.com/video/BV1GJ411x7h7</p>
-                            <p> Youtube: https://www.youtube.com/watch?v=dQw4w9WgXcQ</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
                     </FormLabel>
                     <FormControl>
                       <Input type="url" placeholder="请输入歌曲网址" {...field} />
                     </FormControl>
-                    <FormDescription>请输入网址，目前支持Bilibili和Youtube</FormDescription>
+                    <FormDescription>
+                      <span>请输入网址(Bilibili,Youtube)</span>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <CircleHelp className="w-4 h-4 inline-block ml-2 cursor-pointer" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>目前支持填写Bilibili和Youtube的网址，例如：</p>
+                            <p>
+                              - Bilibili:{' '}
+                              <a
+                                className="underline"
+                                href="https://www.bilibili.com/video/BV1GJ411x7h7"
+                                target="_blank"
+                              >
+                                https://www.bilibili.com/video/BV1GJ411x7h7
+                              </a>
+                            </p>
+                            <p>
+                              - Youtube:{' '}
+                              <a
+                                href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+                                target="_blank"
+                                className="underline"
+                              >
+                                https://www.youtube.com/watch?v=dQw4w9WgXcQ
+                              </a>
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}

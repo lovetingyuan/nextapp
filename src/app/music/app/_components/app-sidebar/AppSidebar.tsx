@@ -45,13 +45,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <Sidebar {...props}>
         <SidebarHeader className="p-4 flex flex-row items-center justify-between">
           <div className="flex flex-row items-center gap-2 ">
-            <Image
-              src={'/music.svg'}
-              alt="music"
-              className="text-red-500 dark:invert"
-              width={38}
-              height={38}
-            />
+            <Image src={'/music.svg'} alt="music" className="dark:invert" width={38} height={38} />
             <span className="text-xl font-bold select-none">庭院音乐</span>
           </div>
           <ThemeSwitch />

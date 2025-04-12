@@ -3,14 +3,10 @@
 import MusicList from '../_components/MusicList'
 import { useGetFavoriteSongs } from '../_swr/useSongs'
 import Loading from '../../_components/Loading'
-import { useEffect } from 'react'
+
 export default function FavoritesPage() {
   const { data, error, isLoading } = useGetFavoriteSongs()
   let content = null
-
-  useEffect(() => {
-    console.log(42432423)
-  }, [])
 
   if (!data && isLoading) {
     content = <Loading />

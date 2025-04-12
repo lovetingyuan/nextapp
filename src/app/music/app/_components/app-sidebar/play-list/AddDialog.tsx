@@ -28,7 +28,7 @@ import { Loader2 } from 'lucide-react'
 import { useSidebarContext } from '../context'
 import { toast } from 'sonner'
 
-export const formSchema = z.object({
+const formSchema = z.object({
   title: z
     .string()
     .min(1, { message: '名称是必填项' })

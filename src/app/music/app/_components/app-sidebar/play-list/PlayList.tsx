@@ -48,14 +48,14 @@ export default function PlayList() {
         return (
           <SidebarMenuItem key={playList.id}>
             <SidebarMenuButton asChild isActive={isActive}>
-              <Link href={href} className="text-lg !pl-3 !h-10">
+              <Link href={href} className="text-lg !pl-3  h-max">
                 {playList.title}
               </Link>
             </SidebarMenuButton>
             <SidebarMenuBadge className="mr-8 "></SidebarMenuBadge>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <SidebarMenuAction className="!h-7">
+                <SidebarMenuAction>
                   <MoreHorizontal />
                 </SidebarMenuAction>
               </DropdownMenuTrigger>

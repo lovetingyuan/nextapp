@@ -20,7 +20,7 @@ import { useAppStore } from '../_context/context'
 import { useSongAudioUrl, useUpdatePlayTime } from '../_swr/useSongs'
 import { SongListType } from '../_swr/useSongs'
 
-export function MusicPlayerInner({ song: playingSong }: { song: SongListType[0] }) {
+function MusicPlayerInner({ song: playingSong }: { song: SongListType[0] }) {
   const [isPlaying, _setIsPlaying] = useState(false)
   const [playMode, setPlayMode] = useState<'repeat' | 'shuffle'>('repeat')
   const [currentTime, setCurrentTime] = useState(0)

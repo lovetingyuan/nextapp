@@ -1,7 +1,6 @@
 import { signOut } from '@/lib/auth-client'
 
-import { buttonVariants } from '@/components/ui/button'
-import { Button } from '@/components/ui/button'
+import { buttonVariants, Button } from '@/components/ui/button'
 import {
   Card,
   CardContent,

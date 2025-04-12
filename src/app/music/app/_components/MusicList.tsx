@@ -43,7 +43,7 @@ export default function MusicList(props: { list?: SongListType; reload?: () => v
   }
 
   return (
-    <div>
+    <div className="animate-in duration-700 fade-in-25">
       <Table>
         <TableHeader>
           <TableRow>
