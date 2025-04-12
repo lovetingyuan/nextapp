@@ -38,5 +38,6 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/music/app/:path*'], // Apply middleware to specific routes
+  matcher: [],
+  // matcher: ['/music/app/:path*'], // Apply middleware to specific routes
 }

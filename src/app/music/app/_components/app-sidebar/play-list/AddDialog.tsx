@@ -78,7 +78,7 @@ export function AddDialog() {
           mutate()
         },
         err => {
-          form.setError('root', { message: '修改失败' + err.message })
+          form.setError('root', { message: '修改失败: ' + err.message })
         }
       )
     } else {
@@ -89,7 +89,7 @@ export function AddDialog() {
           mutate()
         },
         err => {
-          form.setError('root', { message: '添加失败' + err.message })
+          form.setError('root', { message: '添加失败: ' + err.message })
         }
       )
     }
@@ -114,7 +114,9 @@ export function AddDialog() {
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>名称 (必填)</FormLabel>
+                  <FormLabel>
+                    名称 <sub>必填</sub>
+                  </FormLabel>
                   <FormControl>
                     <Input placeholder="请输入名称(50字以内)" {...field} />
                   </FormControl>
@@ -135,7 +137,7 @@ export function AddDialog() {
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage>{form.formState.errors.root?.message}</FormMessage>
                 </FormItem>
               )}
             />

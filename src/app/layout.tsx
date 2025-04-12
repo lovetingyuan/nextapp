@@ -65,7 +65,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen relative`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen relative max-w-7xl mx-auto`}
       >
         {/* <Script
           id="amplitude-script"

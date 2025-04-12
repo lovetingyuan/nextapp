@@ -12,7 +12,17 @@
   "pages_build_output_dir": ".vercel/output/static",
   "observability": {
     "enabled": true
-  }
+  },
+  "r2_buckets": [
+    {
+      "binding": "MusicMp3Bucket",
+      "bucket_name": "music-test"
+    },
+    {
+      "binding": "MusicCoverBucket",
+      "bucket_name": "music-cover"
+    }
+  ],
   /**
    * Smart Placement
    * Docs: https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement

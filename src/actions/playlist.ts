@@ -35,6 +35,7 @@ export async function $getPlayList() {
 export async function $deletePlayList(playListId: number) {
   const { userId } = await verifySession()
   await db.delete(playlists).where(and(eq(playlists.id, playListId), eq(playlists.userId, userId)))
+  return true
 }
 
 export async function $updatePlayList(payload: {
@@ -46,7 +47,10 @@ export async function $updatePlayList(payload: {
 
   const ret = await db
     .update(playlists)
-    .set(payload)
+    .set({
+      ...payload,
+      updatedAt: new Date(),
+    })
     .where(and(eq(playlists.id, payload.playListId), eq(playlists.userId, userId)))
     .returning()
   return ret[0]

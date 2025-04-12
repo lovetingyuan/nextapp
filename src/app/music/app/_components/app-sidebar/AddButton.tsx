@@ -14,7 +14,7 @@ export default function AddButton() {
             onClick={() => {
               setAddOpen(true)
             }}
-            className="!w-5 !h-5"
+            className="scale-125"
           />
         </TooltipTrigger>
         <TooltipContent>

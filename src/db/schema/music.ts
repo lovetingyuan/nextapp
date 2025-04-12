@@ -46,18 +46,22 @@ export const songs = pgTable('songs', {
   artist: varchar('artist', { length: 100 }).notNull(),
   album: varchar('album', { length: 100 }),
   duration: integer('duration').notNull(), // 秒数
-  fileUrl: varchar('file_url', { length: 255 }).notNull(),
+  fileName: varchar('file_name', { length: 255 }).notNull(),
   cover: varchar('cover', { length: 255 }),
   rating: integer('rating').default(0), // 0表示没有设置评分，最低1分最高10分
   lyricist: varchar('lyricist', { length: 100 }),
   composer: varchar('composer', { length: 100 }),
   publishDate: varchar('publish_date', { length: 20 }),
   description: text('description'),
+  lastPlayedAt: timestamp('last_played_at'),
   userId: text('user_id')
     .notNull()
     .references(() => user.id, { onDelete: 'cascade' }),
   createdAt: timestamp('created_at').defaultNow().notNull(),
-  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at')
+    .defaultNow()
+    .$onUpdate(() => new Date())
+    .notNull(),
 })
 
 // 歌曲关系定义
@@ -80,7 +84,10 @@ export const playlists = pgTable('playlists', {
     .references(() => user.id, { onDelete: 'cascade' }),
   position: integer('position').notNull().default(0), // 歌单顺序
   createdAt: timestamp('created_at').defaultNow().notNull(),
-  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at')
+    .defaultNow()
+    .$onUpdate(() => new Date())
+    .notNull(),
 })
 
 // 歌单关系定义

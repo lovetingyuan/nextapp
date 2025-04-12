@@ -32,11 +32,14 @@ const nextConfig = {
     NEXT_PUBLIC_APP_VERSION: pkg.version + '@' + shortHash8,
   },
   images: {
-    remotePatterns: [{ hostname: 'github.com' }, { hostname: 'images.unsplash.com' }],
+    remotePatterns: [{ hostname: 'github.com' }, { hostname: 'music-cover.tingyuan.in' }],
   },
   serverExternalPackages: ['module', 'resend'],
   experimental: {
     useCache: true,
+    serverActions: {
+      bodySizeLimit: '10mb',
+    },
     // nodeMiddleware: true,
   },
 }

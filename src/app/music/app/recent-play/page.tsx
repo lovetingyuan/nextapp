@@ -1,16 +1,12 @@
 'use client'
 
+import { useGetRecentPlayedSongs } from '../_swr/useSongs'
 import MusicList from '../_components/MusicList'
-import { useGetFavoriteSongs } from '../_swr/useSongs'
 import Loading from '../../_components/Loading'
-import { useEffect } from 'react'
-export default function FavoritesPage() {
-  const { data, error, isLoading } = useGetFavoriteSongs()
-  let content = null
 
-  useEffect(() => {
-    console.log(42432423)
-  }, [])
+export default function RecentHeardPage() {
+  const { data, error, isLoading } = useGetRecentPlayedSongs()
+  let content = null
 
   if (!data && isLoading) {
     content = <Loading />
@@ -19,9 +15,10 @@ export default function FavoritesPage() {
   } else if (data) {
     content = <MusicList list={data} />
   }
+
   return (
     <div>
-      <h2 className="text-xl mb-4 animate-in slide-in-from-left-72">我的最爱</h2>
+      <h2 className="text-xl mb-4 animate-in slide-in-from-left-72">最近听过</h2>
       {content}
     </div>
   )

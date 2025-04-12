@@ -27,6 +27,7 @@ import { DeleteDialog } from './play-list/DeleteDialog'
 import { PlayListType } from '@/actions/playlist'
 import { AppSidebarProvider } from './context'
 import AddButton from './AddButton'
+import { usePathname } from 'next/navigation'
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const value = useMemo(() => {
@@ -37,6 +38,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       editingPlayList: null as PlayListType | null,
     }
   }, [])
+  const pathname = usePathname()
+
   return (
     <AppSidebarProvider value={value}>
       <Sidebar {...props}>
@@ -53,12 +56,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </div>
           <ThemeSwitch />
         </SidebarHeader>
-        <SidebarContent>
+        <SidebarContent style={{ scrollbarWidth: 'thin' }}>
           <SidebarGroup>
             <SidebarGroupContent>
               <SidebarMenu>
                 <SidebarMenuItem>
-                  <SidebarMenuButton size={'lg'} className="text-base" asChild isActive={false}>
+                  <SidebarMenuButton
+                    size={'lg'}
+                    className="text-base"
+                    asChild
+                    isActive={pathname === '/music/app/songs'}
+                  >
                     <Link data-aaa href={'/music/app/songs'}>
                       <ListMusic className="!w-5 !h-5" />
                       所有歌曲
@@ -66,7 +74,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
-                  <SidebarMenuButton size={'lg'} className="text-base" asChild isActive={false}>
+                  <SidebarMenuButton
+                    size={'lg'}
+                    className="text-base"
+                    asChild
+                    isActive={pathname === '/music/app/favorites'}
+                  >
                     <Link href={'/music/app/favorites'}>
                       <Crown className="!w-5 !h-5" />
                       我的最爱
@@ -74,8 +87,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
-                  <SidebarMenuButton size={'lg'} className="text-base" asChild isActive={false}>
-                    <Link href={'/music/app/recent-heard'}>
+                  <SidebarMenuButton
+                    size={'lg'}
+                    className="text-base"
+                    asChild
+                    isActive={pathname === '/music/app/recent-play'}
+                  >
+                    <Link href={'/music/app/recent-play'}>
                       <Headphones className="!w-5 !h-5" />
                       最近听过
                     </Link>
