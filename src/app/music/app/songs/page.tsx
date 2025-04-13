@@ -1,6 +1,6 @@
 'use client'
 
-import MusicList from '../_components/MusicList'
+import MusicList from '../_components/music-list/MusicList'
 import { useGetAllSongs } from '../_swr/useSongs'
 import Loading from '../../_components/Loading'
 

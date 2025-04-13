@@ -36,10 +36,11 @@ const nextConfig = {
   },
   serverExternalPackages: ['module', 'resend'],
   experimental: {
-    useCache: true,
+    // useCache: true,
     serverActions: {
       bodySizeLimit: '10mb',
     },
+    reactCompiler: true,
     // nodeMiddleware: true,
   },
 }

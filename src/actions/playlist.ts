@@ -22,7 +22,7 @@ export async function $addPlayList(payload: { title: string; description: string
 
 export type PlayListType = Awaited<ReturnType<typeof $addPlayList>>
 
-export async function $getPlayList() {
+export async function $getAllPlayLists() {
   const { userId } = await verifySession()
   const ret = await db
     .select()
@@ -53,5 +53,14 @@ export async function $updatePlayList(payload: {
     })
     .where(and(eq(playlists.id, payload.playListId), eq(playlists.userId, userId)))
     .returning()
+  return ret[0]
+}
+
+export async function $getThePlayList(playListId: number) {
+  const { userId } = await verifySession()
+  const ret = await db
+    .select()
+    .from(playlists)
+    .where(and(eq(playlists.id, playListId), eq(playlists.userId, userId)))
   return ret[0]
 }

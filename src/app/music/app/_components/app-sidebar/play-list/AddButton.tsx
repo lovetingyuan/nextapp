@@ -2,17 +2,17 @@ import { TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { Tooltip } from '@/components/ui/tooltip'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { Plus } from 'lucide-react'
-import { useSidebarContext } from './context'
+import { useAppStore } from '../../../_context/context'
 
 export default function AddButton() {
-  const { setAddOpen } = useSidebarContext()
+  const { setAddPlayListDialogOpen } = useAppStore()
   return (
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
           <Plus
             onClick={() => {
-              setAddOpen(true)
+              setAddPlayListDialogOpen(true)
             }}
             className="scale-125"
           />

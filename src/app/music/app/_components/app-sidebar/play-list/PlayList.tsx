@@ -11,14 +11,19 @@ import { SidebarMenuBadge } from '@/components/ui/sidebar'
 import { SidebarMenuButton } from '@/components/ui/sidebar'
 import { SidebarMenuItem } from '@/components/ui/sidebar'
 import Link from 'next/link'
-import { useGetPlayList } from '../../../_swr/usePlayList'
+import { useGetAllPlayLists } from '../../../_swr/usePlayList'
 
-import { useSidebarContext } from '../context'
 import { usePathname } from 'next/navigation'
+import { useAppStore } from '../../../_context/context'
 
 export default function PlayList() {
-  const { data, error, isLoading } = useGetPlayList()
-  const { setDeletePlayList, setDeleteOpen, setEditingPlayList, setAddOpen } = useSidebarContext()
+  const { data, error, isLoading } = useGetAllPlayLists()
+  const {
+    setDeletePlayList,
+    setDeletePlayListDialogOpen,
+    setEditingPlayList,
+    setAddPlayListDialogOpen,
+  } = useAppStore()
   const pathname = usePathname()
 
   if (!data && isLoading) {
@@ -48,7 +53,7 @@ export default function PlayList() {
         return (
           <SidebarMenuItem key={playList.id}>
             <SidebarMenuButton asChild isActive={isActive}>
-              <Link href={href} className="text-lg !pl-3  h-max">
+              <Link href={href} className="!text-base !pl-3  !min-h-max">
                 {playList.title}
               </Link>
             </SidebarMenuButton>
@@ -63,7 +68,7 @@ export default function PlayList() {
                 <DropdownMenuItem
                   onClick={() => {
                     setEditingPlayList(playList)
-                    setAddOpen(true)
+                    setAddPlayListDialogOpen(true)
                   }}
                 >
                   <span>修改</span>
@@ -71,7 +76,7 @@ export default function PlayList() {
                 <DropdownMenuItem
                   onClick={() => {
                     setDeletePlayList(playList)
-                    setDeleteOpen(true)
+                    setDeletePlayListDialogOpen(true)
                   }}
                 >
                   <span>删除</span>

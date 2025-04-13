@@ -11,6 +11,7 @@ export default function ThemeSwitch() {
     <Button
       variant="secondary"
       size="icon"
+      title={theme === 'dark' ? '切换到亮色主题' : '切换到暗色主题'}
       onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
     >
       {theme === 'dark' ? <Moon /> : <Sun />}

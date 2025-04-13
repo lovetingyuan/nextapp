@@ -13,12 +13,16 @@ import {
   VolumeX,
   Volume1,
   Volume2,
+  Loader,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn, secondsToMMSS } from '@/lib/utils'
 import { useAppStore } from '../_context/context'
-import { useSongAudioUrl, useUpdatePlayTime } from '../_swr/useSongs'
+import { useSongAudioUrl } from '../_swr/useSongs'
 import { SongListType } from '../_swr/useSongs'
+import { $updatePlayTime } from '@/actions/songs'
+import Image from 'next/image'
+import { Separator } from '@/components/ui/separator'
 
 function MusicPlayerInner({ song: playingSong }: { song: SongListType[0] }) {
   const [isPlaying, _setIsPlaying] = useState(false)
@@ -30,7 +34,7 @@ function MusicPlayerInner({ song: playingSong }: { song: SongListType[0] }) {
   const [isMuted, _setIsMuted] = useState(false)
   const audioRef = useRef<HTMLAudioElement>(null)
   const { data: audioUrl } = useSongAudioUrl(playingSong?.fileName)
-  const updatePlayTime = useUpdatePlayTime()
+
   const setIsMuted = (value: boolean) => {
     _setIsMuted(value)
     if (audioRef.current) {
@@ -108,16 +112,17 @@ function MusicPlayerInner({ song: playingSong }: { song: SongListType[0] }) {
   const { cover, title, artist } = playingSong
   const coverUrl = 'https://music-cover.tingyuan.in/' + cover
   return (
-    <Card className="w-full p-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <>
       <audio
         ref={audioRef}
         src={audioUrl?.url}
         onTimeUpdate={handleTimeUpdate}
+        hidden
         onLoadedMetadata={handleLoadedMetadata}
         autoPlay={true}
         onEnded={handleEnded}
         onPlaying={() => {
-          updatePlayTime(playingSong.id)
+          $updatePlayTime(playingSong.id)
           if (!isPlaying) {
             setIsPlaying(true)
           }
@@ -128,90 +133,103 @@ function MusicPlayerInner({ song: playingSong }: { song: SongListType[0] }) {
           }
         }}
       />
-      <div className="flex items-center gap-6">
-        {/* Cover Image and Song Info Group */}
-        <div className="flex items-center gap-4  shrink-0 pr-6 border-r">
-          <div className="relative w-24 h-24 rounded-lg overflow-hidden shadow-lg shrink-0">
-            <img src={coverUrl} alt="Album Cover" className="w-full h-full object-cover" />
+      <Card className="w-full p-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="flex items-center @2xl:gap-6 gap-4 @container">
+          {/* Cover Image and Song Info Group */}
+          <div className="flex items-center gap-4 shrink-0 @2xl:max-w-80 max-w-30">
+            <div className="relative size-22 hidden @2xl:block rounded-lg overflow-hidden shadow-lg shrink-0">
+              <Image
+                src={coverUrl}
+                width={88}
+                height={88}
+                alt="封面"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="min-w-0">
+              <h2 className="text-xl font-semibold tracking-tight mb-2 line-clamp-2">{title}</h2>
+              <p className="text-sm text-muted-foreground truncate">{artist}</p>
+            </div>
           </div>
-          <div className="min-w-0">
-            <h2 className="text-xl font-semibold tracking-tight mb-2 line-clamp-2">{title}</h2>
-            <p className="text-sm text-muted-foreground truncate">{artist}</p>
+          <Separator orientation="vertical" className="!h-auto self-stretch @2xl:block hidden" />
+          {/* Controls and Progress */}
+          <div className="flex-1 flex flex-col gap-3">
+            {/* Progress Bar */}
+            <div className="flex items-center gap-4 w-full">
+              <Slider
+                value={[duration ? (currentTime / duration) * 100 : 0]}
+                max={100}
+                step={1}
+                className="flex-1"
+                onValueChange={handleSliderChange}
+              />
+              <span className="text-sm text-muted-foreground min-w-[4.5rem] ">
+                {duration
+                  ? secondsToMMSS(currentTime) + ' / ' + secondsToMMSS(duration)
+                  : '加载中...'}
+              </span>
+            </div>
+            {/* Control Buttons */}
+            <div className="flex items-center justify-center  @2xl:gap-3 gap-1">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="size-8"
+                onClick={() => setPlayMode(mode => (mode === 'repeat' ? 'shuffle' : 'repeat'))}
+              >
+                {playMode === 'repeat' ? (
+                  <Repeat className="size-5" />
+                ) : (
+                  <Shuffle className="size-5" />
+                )}
+              </Button>
+              <Button variant="ghost" size="icon" className="size-8">
+                <SkipBack className="size-5" />
+              </Button>
+              <Button
+                variant="secondary"
+                size="icon"
+                className={cn(
+                  'h-12 w-12 rounded-full',
+                  isPlaying && 'bg-primary text-primary-foreground hover:bg-primary/90'
+                )}
+                onClick={() => setIsPlaying(!isPlaying)}
+              >
+                {!duration ? (
+                  <Loader className="size-6 animate-spin" />
+                ) : isPlaying ? (
+                  <Pause className="size-6" />
+                ) : (
+                  <Play className="size-6" />
+                )}
+              </Button>
+              <Button variant="ghost" size="icon" className="size-8">
+                <SkipForward className="size-5" />
+              </Button>
+              <Button variant="ghost" size="icon" className="size-8">
+                <List className="size-5" />
+              </Button>
+              <Button variant="ghost" size="icon" className="size-8" onClick={handleMuteToggle}>
+                {volume === 0 || isMuted ? (
+                  <VolumeX className="size-5" />
+                ) : volume < 0.5 ? (
+                  <Volume1 className="size-5" />
+                ) : (
+                  <Volume2 className="size-5" />
+                )}
+              </Button>
+              <Slider
+                value={[volume * 100]}
+                max={100}
+                step={1}
+                className="w-25"
+                onValueChange={handleVolumeChange}
+              />
+            </div>
           </div>
         </div>
-
-        {/* Controls and Progress */}
-        <div className="flex-1 flex flex-col gap-3 min-w-[400px]">
-          {/* Progress Bar */}
-          <div className="flex items-center gap-4 w-full">
-            <Slider
-              value={[duration ? (currentTime / duration) * 100 : 0]}
-              max={100}
-              step={1}
-              className="flex-1"
-              onValueChange={handleSliderChange}
-            />
-            <span className="text-sm text-muted-foreground min-w-[4.5rem] text-right">
-              {duration
-                ? secondsToMMSS(currentTime) + ' / ' + secondsToMMSS(duration)
-                : '加载中...'}
-            </span>
-          </div>
-
-          {/* Control Buttons */}
-          <div className="flex items-center justify-center gap-3">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-9 w-9"
-              onClick={() => setPlayMode(mode => (mode === 'repeat' ? 'shuffle' : 'repeat'))}
-            >
-              {playMode === 'repeat' ? (
-                <Repeat className="h-5 w-5" />
-              ) : (
-                <Shuffle className="h-5 w-5" />
-              )}
-            </Button>
-            <Button variant="ghost" size="icon" className="h-9 w-9">
-              <SkipBack className="h-5 w-5" />
-            </Button>
-            <Button
-              variant="secondary"
-              size="icon"
-              className={cn(
-                'h-12 w-12 rounded-full',
-                isPlaying && 'bg-primary text-primary-foreground hover:bg-primary/90'
-              )}
-              onClick={() => setIsPlaying(!isPlaying)}
-            >
-              {isPlaying ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6" />}
-            </Button>
-            <Button variant="ghost" size="icon" className="h-9 w-9">
-              <SkipForward className="h-5 w-5" />
-            </Button>
-            <Button variant="ghost" size="icon" className="h-9 w-9">
-              <List className="h-5 w-5" />
-            </Button>
-            <Button variant="ghost" size="icon" className="h-9 w-9" onClick={handleMuteToggle}>
-              {volume === 0 || isMuted ? (
-                <VolumeX className="h-5 w-5" />
-              ) : volume < 0.5 ? (
-                <Volume1 className="h-5 w-5" />
-              ) : (
-                <Volume2 className="h-5 w-5" />
-              )}
-            </Button>
-            <Slider
-              value={[volume * 100]}
-              max={100}
-              step={1}
-              className="w-[100px]"
-              onValueChange={handleVolumeChange}
-            />
-          </div>
-        </div>
-      </div>
-    </Card>
+      </Card>
+    </>
   )
 }
 

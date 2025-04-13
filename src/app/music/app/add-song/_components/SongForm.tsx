@@ -235,7 +235,7 @@ export function CreateSongForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="  w-full max-w-2xl">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full max-w-2xl">
         <fieldset disabled={isMutating}>
           <Tabs
             value={tab}
@@ -311,6 +311,7 @@ export function CreateSongForm() {
                         <Input
                           type="file"
                           accept=".mp3"
+                          className="cursor-pointer"
                           onChange={e => {
                             if (e.target.files?.[0]) {
                               if (e.target.files[0].size > 10 * 1024 * 1024) {
@@ -468,6 +469,7 @@ export function CreateSongForm() {
                     <Input
                       type="file"
                       accept=".jpg,.jpeg,.png"
+                      className="cursor-pointer"
                       onChange={e => {
                         if (e.target.files?.[0]) {
                           const file = e.target.files[0]
@@ -541,7 +543,7 @@ export function CreateSongForm() {
               错误：{error instanceof Error ? error.message : (error?.toString() ?? '未知错误')}
             </p>
           )}
-          <Button type="submit" className="w-full mt-6" disabled={isMutating}>
+          <Button type="submit" className="w-full mt-6 cursor-pointer" disabled={isMutating}>
             {isMutating ? '保存中...' : '保存（可再次编辑）'}
           </Button>
         </fieldset>

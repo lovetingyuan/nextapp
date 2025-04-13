@@ -1,7 +1,6 @@
 'use client'
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -10,16 +9,17 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { toast } from 'sonner'
-import { useGetPlayList } from '../../../_swr/usePlayList'
+import { useGetAllPlayLists } from '../../../_swr/usePlayList'
 import { useDeletePlayList } from '../../../_swr/usePlayList'
-import { useSidebarContext } from '../context'
+import { useAppStore } from '../../../_context/context'
+import { Button } from '@/components/ui/button'
 
 export function DeleteDialog() {
-  const { mutate } = useGetPlayList()
-  const { trigger } = useDeletePlayList()
-  const { deleteOpen, setDeleteOpen, deletePlayList } = useSidebarContext()
+  const { mutate } = useGetAllPlayLists()
+  const { trigger, isMutating } = useDeletePlayList()
+  const { deletePlayListDialogOpen, setDeletePlayListDialogOpen, deletePlayList } = useAppStore()
   return (
-    <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+    <AlertDialog open={deletePlayListDialogOpen} onOpenChange={setDeletePlayListDialogOpen}>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>确定要删除 “{deletePlayList?.title}“？</AlertDialogTitle>
@@ -29,13 +29,16 @@ export function DeleteDialog() {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>取消</AlertDialogCancel>
-          <AlertDialogAction
+          <Button
+            variant="destructive"
+            disabled={isMutating}
             onClick={() => {
               if (deletePlayList) {
                 trigger(deletePlayList.id).then(
                   () => {
                     mutate()
                     toast.success('删除成功')
+                    setDeletePlayListDialogOpen(false)
                   },
                   () => {
                     toast.error('删除失败')
@@ -44,8 +47,8 @@ export function DeleteDialog() {
               }
             }}
           >
-            删除
-          </AlertDialogAction>
+            {isMutating ? '删除中...' : '删除'}
+          </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

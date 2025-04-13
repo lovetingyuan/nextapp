@@ -5,6 +5,10 @@
   field-sizing: content;
 }
 
+button {
+  cursor: pointer;
+}
+
 [data-required]::after {
   content: '*';
   color: red;

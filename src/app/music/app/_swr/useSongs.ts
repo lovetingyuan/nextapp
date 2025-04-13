@@ -5,9 +5,11 @@ import {
   $getRecentPlayedSongs,
   $removeSong,
   $addSong,
-  $updatePlayTime,
+  $getPlayListBySong,
+  $getPlayListSongs,
 } from '@/actions/songs'
 import { mutation } from '@/lib/utils'
+
 import useSWR from 'swr'
 import useSWRMutation from 'swr/mutation'
 
@@ -17,10 +19,6 @@ export function useGetAllSongs() {
 }
 
 export type SongListType = Awaited<ReturnType<typeof $getAllSongs>>
-
-export function useGetPlayListSongs() {
-  //
-}
 
 export function useAddSong() {
   const { trigger, error, isMutating } = useSWRMutation('$/songs/addSong', mutation($addSong), {
@@ -34,27 +32,16 @@ export function useRemoveSong() {
   return { trigger, error, isMutating }
 }
 
-export function useUpdatePlayTime() {
-  const { trigger } = useSWRMutation('$/songs/updatePlayTime', mutation($updatePlayTime))
-  return trigger
-}
-
 export function useSongAudioUrl(fileKey?: string) {
   const { data, error, isLoading } = useSWR(
     fileKey ? [`$/r2/getMusicMp3TempUrl/`, fileKey] : null,
-    $getMusicMp3TempUrl,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    ([_, f]) => $getMusicMp3TempUrl(f),
     {
-      dedupingInterval: 59 * 60 * 1000,
+      dedupingInterval: 50 * 60 * 1000,
     }
   )
   return { data, error, isLoading }
-}
-
-export function useGetSongAudioUrl() {
-  const { trigger } = useSWRMutation('$/r2/getMusicMp3TempUrl', (_, { arg }: { arg: string }) => {
-    return $getMusicMp3TempUrl([_, arg])
-  })
-  return trigger
 }
 
 export function useGetRecentPlayedSongs() {
@@ -64,5 +51,23 @@ export function useGetRecentPlayedSongs() {
 
 export function useGetFavoriteSongs() {
   const { data, error, isLoading } = useSWR('$/songs/getFavoriteSongs', $getFavoriteSongs)
+  return { data, error, isLoading }
+}
+
+export function useGetPlayListIdsBySong(songId?: number) {
+  const { data, error, isLoading, isValidating } = useSWR(
+    songId ? [`$/songs/getPlayListIdsBySong/`, songId] : null,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    ([_, songId]) => $getPlayListBySong(songId)
+  )
+  return { data, error, isLoading, isValidating }
+}
+
+export function useGetPlayListSongs(playListId?: number) {
+  const { data, error, isLoading } = useSWR(
+    Number.isInteger(playListId) ? [`$/songs/getPlayListSongs/`, playListId] : null,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    ([_, playListId]) => $getPlayListSongs(playListId as number)
+  )
   return { data, error, isLoading }
 }

@@ -115,8 +115,7 @@ export async function uploadMusicCover(file: File, fileName: string) {
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export async function $getMusicMp3TempUrl([_, fileKey]: [string, string]) {
+export async function $getMusicMp3TempUrl(fileKey: string) {
   const { userId } = await verifySession()
   if (!fileKey.startsWith(`mp3/${userId}/`)) {
     return { error: '文件路径不合法' }

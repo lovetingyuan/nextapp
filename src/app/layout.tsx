@@ -79,7 +79,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <SonnerToaster />
+          <SonnerToaster richColors expand position="top-right" />
           {children}
         </ThemeProvider>
       </body>

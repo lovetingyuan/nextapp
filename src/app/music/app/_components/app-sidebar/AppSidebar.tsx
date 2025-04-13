@@ -1,6 +1,5 @@
 'use client'
 
-import { useMemo } from 'react'
 import {
   Sidebar,
   SidebarContent,
@@ -24,24 +23,15 @@ import ThemeSwitch from '../ThemeSwitch'
 import { AddDialog } from './play-list/AddDialog'
 
 import { DeleteDialog } from './play-list/DeleteDialog'
-import { PlayListType } from '@/actions/playlist'
-import { AppSidebarProvider } from './context'
-import AddButton from './AddButton'
+// import { AppSidebarProvider } from '@/app/music/app/_context/context'
+import AddButton from './play-list/AddButton'
 import { usePathname } from 'next/navigation'
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const value = useMemo(() => {
-    return {
-      addOpen: false,
-      deleteOpen: false,
-      deletePlayList: null as PlayListType | null,
-      editingPlayList: null as PlayListType | null,
-    }
-  }, [])
   const pathname = usePathname()
 
   return (
-    <AppSidebarProvider value={value}>
+    <>
       <Sidebar {...props}>
         <SidebarHeader className="p-4 flex flex-row items-center justify-between">
           <div className="flex flex-row items-center gap-2 ">
@@ -102,7 +92,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <SidebarGroupLabel className="text-lg font-bold mb-4">
               <span>我的歌单</span>
             </SidebarGroupLabel>
-            <SidebarGroupAction>
+            <SidebarGroupAction className="cursor-pointer">
               <AddButton />
             </SidebarGroupAction>
             <SidebarGroupContent>
@@ -114,6 +104,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </Sidebar>
       <AddDialog />
       <DeleteDialog />
-    </AppSidebarProvider>
+    </>
   )
 }

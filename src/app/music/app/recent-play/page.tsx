@@ -1,7 +1,7 @@
 'use client'
 
 import { useGetRecentPlayedSongs } from '../_swr/useSongs'
-import MusicList from '../_components/MusicList'
+import MusicList from '../_components/music-list/MusicList'
 import Loading from '../../_components/Loading'
 
 export default function RecentHeardPage() {

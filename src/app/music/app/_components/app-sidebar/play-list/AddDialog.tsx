@@ -23,10 +23,10 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import * as z from 'zod'
-import { useAddPlayList, useGetPlayList, useUpdatePlayList } from '../../../_swr/usePlayList'
+import { useAddPlayList, useGetAllPlayLists, useUpdatePlayList } from '../../../_swr/usePlayList'
 import { Loader2 } from 'lucide-react'
-import { useSidebarContext } from '../context'
 import { toast } from 'sonner'
+import { useAppStore } from '../../../_context/context'
 
 const formSchema = z.object({
   title: z
@@ -39,7 +39,8 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>
 
 export function AddDialog() {
-  const { addOpen, setAddOpen, editingPlayList, setEditingPlayList } = useSidebarContext()
+  const { addPlayListDialogOpen, setAddPlayListDialogOpen, editingPlayList, setEditingPlayList } =
+    useAppStore()
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -56,7 +57,7 @@ export function AddDialog() {
   }
 
   const handleOpenChange = (open: boolean) => {
-    setAddOpen(open)
+    setAddPlayListDialogOpen(open)
     form.reset()
     if (!open && editingPlayList) {
       setEditingPlayList(null)
@@ -64,7 +65,7 @@ export function AddDialog() {
   }
   const { trigger: addPlayList, isMutating } = useAddPlayList()
   const { trigger: updatePlayList, isMutating: isUpdating } = useUpdatePlayList()
-  const { mutate } = useGetPlayList()
+  const { mutate } = useGetAllPlayLists()
   const onSubmit = (data: FormValues) => {
     if (editingPlayList) {
       updatePlayList({
@@ -96,9 +97,9 @@ export function AddDialog() {
   }
   const loading = editingPlayList ? isUpdating : isMutating
   return (
-    <Dialog open={addOpen} onOpenChange={handleOpenChange}>
+    <Dialog open={addPlayListDialogOpen} onOpenChange={handleOpenChange}>
       {/* <DialogTrigger asChild>{props.children}</DialogTrigger> */}
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-md max-h-[80vh] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle>{editingPlayList ? '修改歌单' : '添加歌单'}</DialogTitle>
           <DialogDescription hidden></DialogDescription>
@@ -107,7 +108,7 @@ export function AddDialog() {
           <form
             onSubmit={form.handleSubmit(onSubmit)}
             id="add-play-list-form"
-            className="w-full max-w-md space-y-6"
+            className="w-full max-w-md space-y-6 p-2 overflow-y-auto flex-grow"
           >
             <FormField
               control={form.control}
