@@ -16,7 +16,7 @@ import { useRemoveSong } from '../../_swr/useSongs'
 import { toast } from 'sonner'
 
 export default function DeleteDialog() {
-  const { deleteSong, getReloadSongList, showDeleteSongDialog, setShowDeleteSongDialog } =
+  const { deleteSong, getReloadSongListFn, showDeleteSongDialog, setShowDeleteSongDialog } =
     useAppStore()
   const { trigger: deleteSongAction, isMutating: isDeleting } = useRemoveSong()
 
@@ -38,7 +38,7 @@ export default function DeleteDialog() {
                   await deleteSongAction(deleteSong.id)
                   toast.success('删除成功')
                   setShowDeleteSongDialog(false)
-                  getReloadSongList()?.()
+                  getReloadSongListFn()?.()
                 } catch {
                   toast.error('删除失败')
                 }

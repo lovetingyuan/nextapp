@@ -64,10 +64,10 @@ export function useGetPlayListIdsBySong(songId?: number) {
 }
 
 export function useGetPlayListSongs(playListId?: number) {
-  const { data, error, isLoading } = useSWR(
+  const { data, error, isLoading, mutate } = useSWR(
     Number.isInteger(playListId) ? [`$/songs/getPlayListSongs/`, playListId] : null,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     ([_, playListId]) => $getPlayListSongs(playListId as number)
   )
-  return { data, error, isLoading }
+  return { data, error, isLoading, mutate }
 }

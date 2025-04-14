@@ -2,9 +2,9 @@ import { betterAuth } from 'better-auth'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 import { db } from '@/db' // your drizzle instance
 import { nextCookies } from 'better-auth/next-js'
-import { EmailTemplate } from '@/components/email-template'
 
 import { Resend } from 'resend'
+import { EmailVerifyTemplate } from '@/app/music/sign-up/_components/EmailVerifyTemplate'
 
 if (!process.env.RESEND_API_KEY) {
   throw new Error('env RESEND_API_KEY is missing')
@@ -30,7 +30,7 @@ export const auth = betterAuth({
         from: 'Welcome <hello@tingyuan.in>',
         to: [user.email],
         subject: 'Welcome to music',
-        react: EmailTemplate({ firstName: user.name, url }),
+        react: EmailVerifyTemplate({ firstName: user.name, url }),
       })
       if (error) {
         console.error(error)

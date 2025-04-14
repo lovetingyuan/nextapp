@@ -27,6 +27,7 @@ import { Tooltip } from '@/components/ui/tooltip'
 import { CircleHelp, X } from 'lucide-react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
+import { validateS3KeyName } from '@/lib/utils'
 
 const MAX_FILE_SIZE = 1024 * 1024 // 1MB for image
 const MAX_AUDIO_FILE_SIZE = 10 * 1024 * 1024 // 10MB for audio
@@ -36,7 +37,17 @@ const ACCEPTED_AUDIO_TYPES = ['audio/mpeg']
 export const formSchema = z
   .object({
     tab: z.enum(['third', 'local']).default('third'),
-    title: z.string().min(1, '歌曲名称不能为空').max(100, '歌曲名称不能超过100个字符'),
+    title: z
+      .string()
+      .min(1, '歌曲名称不能为空')
+      .max(100, '歌曲名称不能超过100个字符')
+      .refine(v => {
+        const { isValid } = validateS3KeyName(v)
+        if (isValid) {
+          return true
+        }
+        return false
+      }, '歌曲名称不能包含特殊字符'),
     artist: z.string().min(1, '演唱者不能为空').max(100, '演唱者不能超过100个字符'),
     album: z.string().max(100, '专辑名称不能超过100个字符').optional(),
     rating: z.number().min(1).max(10).default(5),
@@ -141,6 +152,7 @@ export function CreateSongForm() {
   const onSubmit = async (values: FormValueType) => {
     // console.log('submitting', values)
     // return
+
     let duration = songMetaInfoRef.current?.format.duration
     if (!duration) {
       duration = await new Promise(resolve => {

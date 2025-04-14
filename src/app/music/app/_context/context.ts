@@ -16,7 +16,7 @@ const getAppValue = () => {
     // 是否显示删除歌曲的确认框
     showDeleteSongDialog: false,
     // 重新加载歌曲列表的方法
-    reloadSongList: null as null | (() => void),
+    reloadSongListFn: (() => {}) as () => void,
     // 重新设置歌单的歌曲
     updatePlayListSong: null as null | SongListType[0],
     // 是否显示设置歌单的对话框

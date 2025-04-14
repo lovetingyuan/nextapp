@@ -54,7 +54,9 @@ export default function MusicList(props: { list?: SongListType }) {
                 <div className="flex items-center gap-4">
                   <div className="relative size-16 rounded-md overflow-hidden flex-shrink-0">
                     <Image
-                      src={'https://music-cover.tingyuan.in/' + song.cover || '/public/music.svg'}
+                      src={
+                        song.cover ? 'https://music-cover.tingyuan.in/' + song.cover : '/music.svg'
+                      }
                       alt={'cover'}
                       width={64}
                       height={64}

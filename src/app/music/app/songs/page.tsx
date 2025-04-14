@@ -3,17 +3,23 @@
 import MusicList from '../_components/music-list/MusicList'
 import { useGetAllSongs } from '../_swr/useSongs'
 import Loading from '../../_components/Loading'
+import { useAppStore } from '../_context/context'
+import { useEffect } from 'react'
 
 export default function SongsPage() {
-  const { data: songList, mutate, error, isLoading } = useGetAllSongs()
+  const { data: songList, error, mutate, isLoading } = useGetAllSongs()
+  const { setReloadSongListFn } = useAppStore()
   let content = null
   if (!songList && isLoading) {
     content = <Loading />
   } else if (error) {
     content = <div className="text-left m-8 text-red-500">抱歉，出错了：{error.message}</div>
   } else if (songList) {
-    content = <MusicList list={songList} reload={mutate} />
+    content = <MusicList list={songList} />
   }
+  useEffect(() => {
+    setReloadSongListFn(() => mutate)
+  }, [])
   return (
     <div>
       <h2 className="text-xl mb-4 animate-in slide-in-from-left-72">所有歌曲</h2>

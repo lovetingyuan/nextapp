@@ -109,7 +109,7 @@ export const playlistSongs = pgTable(
       .references(() => playlists.id, { onDelete: 'cascade' }),
     songId: integer('song_id')
       .notNull()
-      .references(() => songs.id),
+      .references(() => songs.id, { onDelete: 'cascade' }),
     position: integer('position').notNull().default(0), // 歌曲在歌单中的顺序
     addedAt: timestamp('added_at').defaultNow().notNull(),
   },

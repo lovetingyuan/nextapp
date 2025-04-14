@@ -12,13 +12,13 @@ export const resendEmail = async (email: string) => {
   // if (!session) {
   //   redirect('/music/sign-in')
   // }
-  const data = await auth.api.sendVerificationEmail({
+  await auth.api.sendVerificationEmail({
     body: {
       email: email,
       callbackURL: '/music/app', // The redirect URL after verification
     },
   })
-  console.log('data', data)
+  return true
   // return authClient.sendVerificationEmail({
   //   email: session.user.email,
   //   callbackURL: '/', // The redirect URL after verification

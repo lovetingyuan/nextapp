@@ -7,7 +7,7 @@ import { verifySession } from '@/lib/dal'
 import { GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import { S3Client } from '@aws-sdk/client-s3'
-import { ensureString, isValidS3KeyName } from '@/lib/utils'
+import { ensureString, validateS3KeyName } from '@/lib/utils'
 
 const ACCOUNT_ID = ensureString(process.env.R2_ACCOUNT_ID, 'R2_ACCOUNT_ID 不能为空')
 const ACCESS_KEY_ID = ensureString(process.env.R2_ACCESS_KEY_ID, 'R2_ACCESS_KEY_ID 不能为空')
@@ -42,9 +42,9 @@ export async function uploadMusicMp3(file: File, fileName: string) {
   if (!fileName.endsWith('.mp3')) {
     return { error: '文件路径必须以.mp3结尾' }
   }
-  if (!isValidS3KeyName(fileName)) {
-    console.log('invalid file name', fileName)
-    return { error: '文件路径不合法' }
+  const { isValid, error } = validateS3KeyName(fileName)
+  if (!isValid) {
+    return { error: '文件路径不合法, ' + error }
   }
   const fileKey = `mp3/${userId}/${fileName}`
   const url = await getSignedUrl(
@@ -86,8 +86,9 @@ export async function uploadMusicCover(file: File, fileName: string) {
   if (!fileName.endsWith('.png') && !fileName.endsWith('.jpg') && !fileName.endsWith('.jpeg')) {
     return { error: '文件路径必须以.png, .jpg, .jpeg结尾' }
   }
-  if (!isValidS3KeyName(fileName)) {
-    return { error: '文件路径不合法' }
+  const { isValid, error } = validateS3KeyName(fileName)
+  if (!isValid) {
+    return { error: '文件路径不合法, ' + error }
   }
   const fileKey = `cover/${userId}/${fileName}`
   const url = await getSignedUrl(

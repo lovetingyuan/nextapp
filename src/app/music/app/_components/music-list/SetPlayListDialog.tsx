@@ -97,10 +97,13 @@ function SetPlayListDialogInner(props: { open: boolean }) {
                 </Button>
               )
             })}
+            {!playList.length && (
+              <div className="text-center text-muted-foreground">暂无歌单，在左侧点击➕添加</div>
+            )}
           </div>
         )}
         <DialogFooter>
-          <Button disabled={validating || saving} onClick={handleSave}>
+          <Button disabled={validating || saving || !playList?.length} onClick={handleSave}>
             {saving ? '保存中...' : '保存'}
           </Button>
         </DialogFooter>

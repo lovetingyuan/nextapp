@@ -3,9 +3,10 @@
 import { RefreshCw } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
-import { resendEmail } from '../actions'
+
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { resendEmail } from '@/actions/auth'
 
 export default function ResendButton({ email }: { email: string }) {
   const [loading, setLoading] = useState(false)
@@ -23,9 +24,9 @@ export default function ResendButton({ email }: { email: string }) {
   }
   return (
     <div className="pt-6 flex text-center items-center justify-center gap-2 flex-wrap sm:flex-nowrap">
-      <p className="text-sm text-gray-500   shrink-0">没收到邮件？</p>
-      <Button disabled={loading} variant="outline" className="w-full" size="lg" onClick={resend}>
-        <RefreshCw className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+      <p className="text-sm text-gray-500 shrink-0">没收到邮件？</p>
+      <Button disabled={loading} variant="outline" size="lg" onClick={resend}>
+        <RefreshCw className={`mr-2 size-4 ${loading ? 'animate-spin' : ''}`} />
         重新发送验证邮件
       </Button>
     </div>

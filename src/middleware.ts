@@ -26,7 +26,10 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(redirectUrl)
     }
     if (!session.user.emailVerified) {
-      const redirectUrl = new URL('/music/verify-email', request.url)
+      const redirectUrl = new URL(
+        '/music/sign-up?email=' + encodeURIComponent(session.user.email),
+        request.url
+      )
       return NextResponse.redirect(redirectUrl)
     }
 

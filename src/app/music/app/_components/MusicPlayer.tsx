@@ -1,5 +1,5 @@
 'use client'
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect, useCallback } from 'react'
 import { Card } from '@/components/ui/card'
 import { Slider } from '@/components/ui/slider'
 import {
@@ -23,14 +23,23 @@ import { SongListType } from '../_swr/useSongs'
 import { $updatePlayTime } from '@/actions/songs'
 import Image from 'next/image'
 import { Separator } from '@/components/ui/separator'
-
+import { useLatestFn } from '@/hooks/use-latest'
 function MusicPlayerInner({ song: playingSong }: { song: SongListType[0] }) {
+  const VOLUME_STORAGE_KEY = 'music-player-volume'
   const [isPlaying, _setIsPlaying] = useState(false)
+  const getIsPlaying = useLatestFn(isPlaying)
   const [playMode, setPlayMode] = useState<'repeat' | 'shuffle'>('repeat')
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
-  const [volume, _setVolume] = useState(1)
-  const [prevVolume, setPrevVolume] = useState(1)
+  const getDuration = useLatestFn(duration)
+  const [volume, _setVolume] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const savedVolume = localStorage.getItem(VOLUME_STORAGE_KEY)
+      return savedVolume ? parseFloat(savedVolume) : 1
+    }
+    return 1
+  })
+  const [prevVolume, setPrevVolume] = useState(volume)
   const [isMuted, _setIsMuted] = useState(false)
   const audioRef = useRef<HTMLAudioElement>(null)
   const { data: audioUrl } = useSongAudioUrl(playingSong?.fileName)
@@ -51,16 +60,23 @@ function MusicPlayerInner({ song: playingSong }: { song: SongListType[0] }) {
     } else {
       setIsMuted(false)
     }
+    localStorage.setItem(VOLUME_STORAGE_KEY, value.toString())
   }
 
-  const setIsPlaying = (value: boolean) => {
-    _setIsPlaying(value)
-    if (value) {
-      audioRef.current?.play()
-    } else {
-      audioRef.current?.pause()
-    }
-  }
+  const setIsPlaying = useCallback(
+    (value: boolean) => {
+      if (getDuration() === 0) {
+        return
+      }
+      _setIsPlaying(value)
+      if (value) {
+        audioRef.current?.play()
+      } else {
+        audioRef.current?.pause()
+      }
+    },
+    [getDuration]
+  )
 
   const handleTimeUpdate = () => {
     if (audioRef.current) {
@@ -71,6 +87,7 @@ function MusicPlayerInner({ song: playingSong }: { song: SongListType[0] }) {
   const handleLoadedMetadata = () => {
     if (audioRef.current) {
       setDuration(audioRef.current.duration)
+      audioRef.current.volume = volume
     }
   }
 
@@ -110,7 +127,25 @@ function MusicPlayerInner({ song: playingSong }: { song: SongListType[0] }) {
   }
 
   const { cover, title, artist } = playingSong
-  const coverUrl = 'https://music-cover.tingyuan.in/' + cover
+  const coverUrl = cover ? 'https://music-cover.tingyuan.in/' + cover : '/music.svg'
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Only trigger if space is pressed and no input/textarea is focused
+      if (
+        e.code === 'Space' &&
+        !(e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement)
+      ) {
+        e.preventDefault() // Prevent page scroll
+        const playing = getIsPlaying()
+        setIsPlaying(!playing)
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [getIsPlaying, setIsPlaying])
+
   return (
     <>
       <audio
@@ -133,11 +168,11 @@ function MusicPlayerInner({ song: playingSong }: { song: SongListType[0] }) {
           }
         }}
       />
-      <Card className="w-full p-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex items-center @2xl:gap-6 gap-4 @container">
+      <Card className="@container w-full rounded-none sm:p-4 p-3 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="flex items-center @2xl:gap-6 @4xl:gap-10 gap-4 ">
           {/* Cover Image and Song Info Group */}
-          <div className="flex items-center gap-4 shrink-0 @2xl:max-w-80 max-w-30">
-            <div className="relative size-22 hidden @2xl:block rounded-lg overflow-hidden shadow-lg shrink-0">
+          <div className="  items-center gap-4 shrink-0 @2xl:max-w-60 @4xl:max-w-100 max-w-30 @md:flex hidden">
+            <div className="relative size-22 rounded-lg overflow-hidden shadow-lg shrink-0">
               <Image
                 src={coverUrl}
                 width={88}
@@ -146,14 +181,22 @@ function MusicPlayerInner({ song: playingSong }: { song: SongListType[0] }) {
                 className="w-full h-full object-cover"
               />
             </div>
-            <div className="min-w-0">
+            <div className="min-w-0 hidden @2xl:block">
               <h2 className="text-xl font-semibold tracking-tight mb-2 line-clamp-2">{title}</h2>
               <p className="text-sm text-muted-foreground truncate">{artist}</p>
             </div>
           </div>
           <Separator orientation="vertical" className="!h-auto self-stretch @2xl:block hidden" />
           {/* Controls and Progress */}
-          <div className="flex-1 flex flex-col gap-3">
+          <div className="flex-1 flex flex-col @2xl:gap-3 gap-1">
+            <div className=" flex items-center @2xl:hidden  ">
+              <span className="text-base align-middle font-semibold tracking-tight truncate  max-w-[80cqw] @md:max-w-[66cqw] line-clamp-1 inline-block mr-4">
+                {title}
+              </span>
+              <span className="text-xs text-muted-foreground truncate max-w-[10cqw] @md:max-w-[12cqw]">
+                {artist}
+              </span>
+            </div>
             {/* Progress Bar */}
             <div className="flex items-center gap-4 w-full">
               <Slider
@@ -163,14 +206,14 @@ function MusicPlayerInner({ song: playingSong }: { song: SongListType[0] }) {
                 className="flex-1"
                 onValueChange={handleSliderChange}
               />
-              <span className="text-sm text-muted-foreground min-w-[4.5rem] ">
+              <span className="text-xs @md:text-sm text-muted-foreground min-w-[4.5rem] ">
                 {duration
                   ? secondsToMMSS(currentTime) + ' / ' + secondsToMMSS(duration)
                   : '加载中...'}
               </span>
             </div>
             {/* Control Buttons */}
-            <div className="flex items-center justify-center  @2xl:gap-3 gap-1">
+            <div className="flex items-center justify-center @2xl:gap-3 @lg:gap-2 gap-1">
               <Button
                 variant="ghost"
                 size="icon"
@@ -190,7 +233,7 @@ function MusicPlayerInner({ song: playingSong }: { song: SongListType[0] }) {
                 variant="secondary"
                 size="icon"
                 className={cn(
-                  'h-12 w-12 rounded-full',
+                  '@2xl:size-12 size-10 rounded-full border',
                   isPlaying && 'bg-primary text-primary-foreground hover:bg-primary/90'
                 )}
                 onClick={() => setIsPlaying(!isPlaying)}

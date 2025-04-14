@@ -32,20 +32,78 @@ export function ensureString(value: unknown, msg?: string): string {
   return value
 }
 
-export function isValidS3KeyName(keyName: string) {
-  // S3对象键长度限制(1-1024字节)
-  if (!keyName || keyName.length === 0 || keyName.length > 800) {
-    return false
+/**
+ * 验证S3对象名称是否合法
+ * @param {string} keyName - 要验证的S3对象名称
+ * @returns {object} - 包含验证结果与错误信息的对象
+ */
+export function validateS3KeyName(keyName: string) {
+  // 检查参数是否为字符串
+  if (typeof keyName !== 'string') {
+    return {
+      isValid: false,
+      error: '名称必须是字符串',
+    }
   }
 
-  // 检查不允许的字符
-  // 这些包括控制字符和一些可能导致问题的特殊字符
-  const forbiddenChars = /[\x00-\x1F\x7F"'&<>^`|#\\\/]/
-  if (forbiddenChars.test(keyName)) {
-    return false
+  // 检查名称长度
+  if (keyName.length === 0) {
+    return {
+      isValid: false,
+      error: '名称不能为空',
+    }
   }
 
-  return true
+  if (keyName.length > 1024) {
+    return {
+      isValid: false,
+      error: '名称长度不能超过1024',
+    }
+  }
+
+  // 检查是否以点(.)或双点(..)开头（技术上允许但不推荐）
+  if (keyName === '.' || keyName === '..') {
+    return {
+      isValid: true,
+      warning: '不推荐使用"."或".."作为名称',
+    }
+  }
+
+  // 检查有效字符
+  // S3允许的字符集比较宽松，但有些字符在使用时可能需要URL编码
+  // 此处检查常见的不推荐使用的字符
+  const potentiallyProblematicChars = /[\\:*?"<>|]/
+  if (potentiallyProblematicChars.test(keyName)) {
+    return {
+      isValid: true,
+      warning: '名称包含可能导致问题的字符 (\\, :, *, ?, ", <, >, |)，建议避免使用',
+    }
+  }
+
+  // 检查名称中是否有控制字符
+  for (let i = 0; i < keyName.length; i++) {
+    const code = keyName.charCodeAt(i)
+    if (code < 32) {
+      return {
+        isValid: false,
+        error: `名称包含无效的控制字符(ASCII码: ${code})`,
+      }
+    }
+  }
+
+  // 检查UTF-8编码的字节长度是否超过1024
+  const utf8Length = new TextEncoder().encode(keyName).length
+  if (utf8Length > 1024) {
+    return {
+      isValid: false,
+      error: `名称编码后超过长度限制`,
+    }
+  }
+
+  // 所有检查都通过
+  return {
+    isValid: true,
+  }
 }
 
 /**

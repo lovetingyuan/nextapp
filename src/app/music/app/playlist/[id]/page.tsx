@@ -5,12 +5,14 @@ import { useGetPlayListSongs } from '../../_swr/useSongs'
 import { useGetAllPlayLists } from '../../_swr/usePlayList'
 import MusicList from '../../_components/music-list/MusicList'
 import Loading from '@/app/music/_components/Loading'
-
+import { useEffect } from 'react'
+import { useAppStore } from '../../_context/context'
 export default function PlayListPage() {
   const params = useParams<{ id: string }>()
   const playListId = params.id
 
-  const { data, error, isLoading } = useGetPlayListSongs(parseInt(playListId))
+  const { data, error, isLoading, mutate } = useGetPlayListSongs(parseInt(playListId))
+  const { setReloadSongListFn } = useAppStore()
   const { data: playLists } = useGetAllPlayLists()
   const playList = playListId ? playLists?.find(v => v.id === parseInt(playListId)) : null
   let content = null
@@ -24,7 +26,9 @@ export default function PlayListPage() {
   } else if (data) {
     content = <MusicList list={data} />
   }
-
+  useEffect(() => {
+    setReloadSongListFn(() => mutate)
+  }, [setReloadSongListFn, mutate])
   return (
     <div>
       <h2 className="text-xl mb-4 animate-in slide-in-from-left-72">歌单 {playList?.title}</h2>

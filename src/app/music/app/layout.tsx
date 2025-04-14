@@ -6,20 +6,24 @@ import SearchInput from './_components/SearchInput'
 import AddMusic from './_components/AddMusic'
 import { MusicPlayer } from './_components/MusicPlayer'
 import AppProvider from './_context/provider'
+import UserProfile from './_components/UserProfile'
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <AppProvider>
       <SidebarProvider className="flex-1">
-        <AppSidebar variant="inset" />
+        <AppSidebar />
 
-        <SidebarInset className="h-[calc(100vh-16px)] overflow-hidden relative">
+        <SidebarInset className="h-dvh overflow-hidden relative">
           <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
             <SidebarTrigger className="-ml-1" />
             <Separator orientation="vertical" className="mr-2 h-4" />
             <div className="flex items-center gap-2 justify-between flex-grow">
               <SearchInput />
-              <AddMusic />
+              <div className="flex items-center gap-4">
+                <AddMusic />
+                <UserProfile />
+              </div>
             </div>
           </header>
           <main className="p-5 overflow-auto flex-grow">{children}</main>
