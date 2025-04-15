@@ -6,7 +6,7 @@ import SearchInput from './_components/SearchInput'
 import AddMusic from './_components/AddMusic'
 import { MusicPlayer } from './_components/MusicPlayer'
 import AppProvider from './_context/provider'
-import UserProfile from './_components/UserProfile'
+import UserAvatar from './_components/UserAvatar'
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -22,7 +22,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <SearchInput />
               <div className="flex items-center gap-4">
                 <AddMusic />
-                <UserProfile />
+                <UserAvatar />
               </div>
             </div>
           </header>

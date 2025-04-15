@@ -27,7 +27,7 @@ import { useAddPlayList, useGetAllPlayLists, useUpdatePlayList } from '../../../
 import { Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { useAppStore } from '../../../_context/context'
-
+import { useEffect } from 'react'
 const formSchema = z.object({
   title: z
     .string()
@@ -48,13 +48,16 @@ export function AddDialog() {
       description: editingPlayList?.description || '',
     },
   })
-  const value = form.getValues()
-  if (!value.title && editingPlayList?.title) {
-    form.setValue('title', editingPlayList.title)
-  }
-  if (!value.description && editingPlayList?.description) {
-    form.setValue('description', editingPlayList.description)
-  }
+
+  useEffect(() => {
+    const value = form.getValues()
+    if (!value.title && editingPlayList?.title) {
+      form.setValue('title', editingPlayList.title)
+    }
+    if (!value.description && editingPlayList?.description) {
+      form.setValue('description', editingPlayList.description)
+    }
+  }, [editingPlayList, form])
 
   const handleOpenChange = (open: boolean) => {
     setAddPlayListDialogOpen(open)

@@ -125,6 +125,11 @@ function MusicPlayerInner({ song: playingSong }: { song: SongListType[0] }) {
       setIsMuted(true)
     }
   }
+  useEffect(() => {
+    if (duration > 0) {
+      setIsPlaying(true)
+    }
+  }, [duration, setIsPlaying])
 
   const { cover, title, artist } = playingSong
   const coverUrl = cover ? 'https://music-cover.tingyuan.in/' + cover : '/music.svg'
@@ -154,7 +159,7 @@ function MusicPlayerInner({ song: playingSong }: { song: SongListType[0] }) {
         onTimeUpdate={handleTimeUpdate}
         hidden
         onLoadedMetadata={handleLoadedMetadata}
-        autoPlay={true}
+        // autoPlay={true}
         onEnded={handleEnded}
         onPlaying={() => {
           $updatePlayTime(playingSong.id)

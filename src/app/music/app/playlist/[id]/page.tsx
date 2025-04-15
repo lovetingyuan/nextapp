@@ -31,7 +31,10 @@ export default function PlayListPage() {
   }, [setReloadSongListFn, mutate])
   return (
     <div>
-      <h2 className="text-xl mb-4 animate-in slide-in-from-left-72">歌单 {playList?.title}</h2>
+      <h2 className="text-xl flex mb-4 gap-4 animate-in slide-in-from-left-72">
+        <span className="shrink-0">歌单</span>{' '}
+        <span className="line-clamp-2 text-ellipsis">{playList?.title}</span>
+      </h2>
       {content}
     </div>
   )

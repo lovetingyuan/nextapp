@@ -53,8 +53,8 @@ export default function PlayList() {
         return (
           <SidebarMenuItem key={playList.id}>
             <SidebarMenuButton asChild isActive={isActive}>
-              <Link href={href} className="!text-base !pl-3  !min-h-max">
-                {playList.title}
+              <Link href={href} className="!text-base !pl-3 !min-h-max">
+                <p className="!line-clamp-2 !text-ellipsis">{playList.title}</p>
               </Link>
             </SidebarMenuButton>
             <SidebarMenuBadge className="mr-8 "></SidebarMenuBadge>

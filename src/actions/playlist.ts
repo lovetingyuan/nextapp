@@ -29,6 +29,7 @@ export async function $getAllPlayLists() {
     .from(playlists)
     .where(eq(playlists.userId, userId))
     .orderBy(asc(playlists.position))
+
   return ret
 }
 

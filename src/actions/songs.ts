@@ -70,15 +70,36 @@ export async function $addSong(song: FormValueType & { duration: number }) {
       song.title + '_' + song.cover.name
     )
     if (error !== null) {
-      console.log(43423, error)
       throw new Error(error)
     } else {
       dbItem.cover = fileKey
     }
   }
-  // add song to db
-  const [{ id }] = await db.insert(songs).values(dbItem).returning()
-  // add song to r2
+  let maxPositions: { playlistId: number; maxPosition: number | null }[] = []
+  if (song.playlists?.length) {
+    maxPositions = await db
+      .select({
+        playlistId: playlistSongs.playlistId,
+        maxPosition: max(playlistSongs.position),
+      })
+      .from(playlistSongs)
+      .where(inArray(playlistSongs.playlistId, song.playlists))
+      .groupBy(playlistSongs.playlistId)
+  }
+  const maxPositionMap = new Map<number, number>()
+  for (const { playlistId, maxPosition } of maxPositions) {
+    maxPositionMap.set(playlistId, (maxPosition ?? 0) + 1)
+  }
+  const id = await db.transaction(async tx => {
+    const [{ id: songId }] = await tx.insert(songs).values(dbItem).returning()
+    if (song.playlists?.length) {
+      const position = maxPositionMap.get(song.playlists[0]) ?? 0
+      await tx
+        .insert(playlistSongs)
+        .values(song.playlists.map(id => ({ songId, playlistId: id, position })))
+    }
+    return songId
+  })
   return id
 }
 

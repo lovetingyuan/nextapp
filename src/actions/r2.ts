@@ -129,3 +129,51 @@ export async function $getMusicMp3TempUrl(fileKey: string) {
   const url = await getSignedUrl(S3, command, { expiresIn: 3600 })
   return { error: null, url }
 }
+
+export async function $uploadUserAvatar(file: File) {
+  const { userId } = await verifySession()
+
+  if (!file) {
+    return { error: '请选择文件' }
+  }
+  const fileName = file.name
+  if (!fileName) {
+    return { error: '请输入文件路径' }
+  }
+  const fileExt = fileName.split('.').pop()?.toLowerCase()
+  if (!fileExt) {
+    return { error: '无法获取文件扩展名' }
+  }
+  if (!fileName.endsWith('.png') && !fileName.endsWith('.jpg') && !fileName.endsWith('.jpeg')) {
+    return { error: '文件路径必须以.png, .jpg, .jpeg结尾' }
+  }
+  const { isValid, error } = validateS3KeyName(fileName)
+  if (!isValid) {
+    return { error: '文件路径不合法, ' + error }
+  }
+
+  const fileKey = `avatar/${userId}/${Date.now()}-avatar.${fileExt}`
+  const url = await getSignedUrl(
+    S3,
+    new PutObjectCommand({
+      Bucket: MusicCoverBucket,
+      Key: fileKey,
+    }),
+    {
+      expiresIn: 600,
+    }
+  )
+  console.log('pre cover url', fileName, url, file)
+  try {
+    const uploadRes = await fetch(url, {
+      method: 'PUT',
+      body: file,
+    })
+    if (!uploadRes.ok) {
+      return { error: '上传响应失败 ' + uploadRes.status + '--' + (await uploadRes.text()) }
+    }
+    return { error: null, fileKey }
+  } catch (error) {
+    return { error: '上传请求失败 ' + (error?.toString() || '') }
+  }
+}

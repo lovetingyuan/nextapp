@@ -14,6 +14,7 @@ export function useGetAllPlayLists() {
     '$/playlist/get',
     $getAllPlayLists
   )
+
   return { data, error, isLoading, isValidating, mutate }
 }
 

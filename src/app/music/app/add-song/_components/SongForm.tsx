@@ -28,6 +28,8 @@ import { CircleHelp, X } from 'lucide-react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { validateS3KeyName } from '@/lib/utils'
+import MultiSelect from '@/components/MultiSelect'
+import { useGetAllPlayLists } from '../../_swr/usePlayList'
 
 const MAX_FILE_SIZE = 1024 * 1024 // 1MB for image
 const MAX_AUDIO_FILE_SIZE = 10 * 1024 * 1024 // 10MB for audio
@@ -65,6 +67,7 @@ export const formSchema = z
       .refine(file => file && file.size <= MAX_AUDIO_FILE_SIZE, '音频文件大小不能超过10MB')
       .refine(file => file && ACCEPTED_AUDIO_TYPES.includes(file.type), '只支持 .mp3 格式')
       .optional(),
+    duration: z.number().min(1),
     lyricist: z.string().max(100, '作词者不能超过100个字符').optional(),
     composer: z.string().max(100, '作曲者不能超过100个字符').optional(),
     year: z
@@ -82,6 +85,7 @@ export const formSchema = z
       }, '请填入正确的年份')
       .optional(),
     description: z.string().max(500, '描述不能超过500个字符').optional(),
+    playlists: z.array(z.number()).optional(),
   })
   .refine(
     data => {
@@ -126,8 +130,11 @@ export function CreateSongForm() {
       composer: '',
       description: '',
       thirdUrl: '',
+      duration: 0,
+      playlists: [],
     },
   })
+
   const router = useRouter()
   const { trigger: addSong, error, isMutating } = useAddSong()
   const [coverPreview, setCoverPreview] = useState<string | null>(null)
@@ -147,35 +154,18 @@ export function CreateSongForm() {
     }
   }
 
+  const { data: playlistsList } = useGetAllPlayLists()
+
+  const playListsOptions =
+    playlistsList?.map(playlist => ({
+      label: playlist.title,
+      value: playlist.id,
+    })) ?? []
+
   const songMetaInfoRef = useRef<IAudioMetadata | null>(null)
 
   const onSubmit = async (values: FormValueType) => {
-    // console.log('submitting', values)
-    // return
-
-    let duration = songMetaInfoRef.current?.format.duration
-    if (!duration) {
-      duration = await new Promise(resolve => {
-        if (!values.audioFile) {
-          toast.error('请上传歌曲文件')
-          return
-        }
-        const objectURL = URL.createObjectURL(values.audioFile)
-        const audio = new Audio(objectURL)
-        audio.addEventListener('loadedmetadata', () => {
-          resolve(Math.floor(audio.duration))
-          URL.revokeObjectURL(objectURL)
-        })
-      })
-    } else {
-      duration = Math.floor(duration)
-    }
-    if (!duration) {
-      toast.error('获取歌曲时长失败')
-      return
-    }
-
-    toast.promise(addSong({ ...values, duration }), {
+    toast.promise(addSong({ ...values }), {
       loading: '添加中，这需要花一些时间...',
       success: () => {
         router.push('/music/app/songs')
@@ -190,6 +180,19 @@ export function CreateSongForm() {
       const metadata = await parseBlob(file)
 
       songMetaInfoRef.current = metadata
+      if (metadata.format.duration) {
+        form.setValue('duration', Math.floor(metadata.format.duration), { shouldValidate: true })
+      } else {
+        const duration: number = await new Promise(resolve => {
+          const objectURL = URL.createObjectURL(file)
+          const audio = new Audio(objectURL)
+          audio.addEventListener('loadedmetadata', () => {
+            resolve(Math.floor(audio.duration))
+            URL.revokeObjectURL(objectURL)
+          })
+        })
+        form.setValue('duration', duration, { shouldValidate: true })
+      }
       if (metadata.common.title) {
         form.setValue('title', metadata.common.title, { shouldValidate: true })
       }
@@ -355,7 +358,7 @@ export function CreateSongForm() {
           </Tabs>
 
           <Separator className="my-6" />
-          <div className="px-2 space-y-4">
+          <div className="px-2 space-y-6">
             <div className="flex flex-col xs:flex-row gap-4">
               <FormField
                 control={form.control}
@@ -445,31 +448,54 @@ export function CreateSongForm() {
                 )}
               />
             </div>
-
-            <FormField
-              control={form.control}
-              name="rating"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>歌曲评分 (1~10)</FormLabel>
-                  <FormControl>
-                    <div className="flex items-center space-x-4">
-                      <Slider
-                        min={1}
-                        max={10}
-                        step={1}
-                        value={[field.value]}
-                        onValueChange={value => field.onChange(value[0])}
-                        className={`w-full ${isMutating ? 'opacity-50' : ''}`}
-                        disabled={isMutating}
+            <div className="flex flex-col xs:flex-row gap-4">
+              <FormField
+                control={form.control}
+                name="rating"
+                render={({ field }) => (
+                  <FormItem className="flex-1">
+                    <FormLabel>歌曲评分 (1~10)</FormLabel>
+                    <FormControl>
+                      <div className="flex items-center space-x-4">
+                        <Slider
+                          min={1}
+                          max={10}
+                          step={1}
+                          value={[field.value]}
+                          onValueChange={value => field.onChange(value[0])}
+                          className={`w-full ${isMutating ? 'opacity-50' : ''}`}
+                          disabled={isMutating}
+                        />
+                        <span className="w-12 text-center">{field.value}</span>
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="playlists"
+                render={({ field }) => (
+                  <FormItem className="flex-1">
+                    <FormLabel>所属歌单</FormLabel>
+                    <FormControl>
+                      <MultiSelect
+                        options={playListsOptions}
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        placeholder="选择歌单"
+                        variant="secondary"
+                        contentClassName="max-w-xs"
+                        selectedTextClassName="max-w-30 truncate"
                       />
-                      <span className="w-12 text-center">{field.value}</span>
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    </FormControl>
+                    {/* <FormDescription></FormDescription> */}
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
             <FormField
               control={form.control}
@@ -556,7 +582,7 @@ export function CreateSongForm() {
             </p>
           )}
           <Button type="submit" className="w-full mt-6 cursor-pointer" disabled={isMutating}>
-            {isMutating ? '保存中...' : '保存（可再次编辑）'}
+            {isMutating ? '保存中...' : '保存'}
           </Button>
         </fieldset>
       </form>

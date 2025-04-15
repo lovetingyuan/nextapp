@@ -87,7 +87,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             </SidebarGroupContent>
           </SidebarGroup>
           {/* We create a SidebarGroup for each parent. */}
-          <SidebarSeparator />
+          <SidebarSeparator className="mx-auto !w-9/10" />
           <SidebarGroup>
             <SidebarGroupLabel className="text-lg font-bold mb-4">
               <span>我的歌单</span>
