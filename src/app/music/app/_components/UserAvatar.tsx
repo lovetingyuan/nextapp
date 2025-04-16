@@ -13,7 +13,11 @@ export default function UserAvatar(props: { className?: string }) {
     : undefined
   return (
     <Link href="/music/app/user">
-      <Avatar data-avatar={avatar} className={cn('size-10 border', props.className)}>
+      <Avatar
+        title={session.data?.user.name}
+        data-avatar={avatar}
+        className={cn('size-10 border', props.className)}
+      >
         <AvatarImage className="object-cover" src={avatar} alt={session.data?.user.name || ''} />
         <AvatarFallback>
           {session.data?.user.name?.slice(0, 2).toUpperCase() ?? '···'}

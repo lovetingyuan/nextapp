@@ -60,8 +60,8 @@ export default function PlayList() {
             <SidebarMenuBadge className="mr-8 "></SidebarMenuBadge>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <SidebarMenuAction>
-                  <MoreHorizontal />
+                <SidebarMenuAction className="rounded-none">
+                  <MoreHorizontal className="!w-5 !h-5" />
                 </SidebarMenuAction>
               </DropdownMenuTrigger>
               <DropdownMenuContent side="right" align="start">

@@ -19,7 +19,7 @@ export default function SongsPage() {
   }
   useEffect(() => {
     setReloadSongListFn(() => mutate)
-  }, [])
+  }, [mutate, setReloadSongListFn])
   return (
     <div>
       <h2 className="text-xl mb-4 animate-in slide-in-from-left-72">所有歌曲</h2>

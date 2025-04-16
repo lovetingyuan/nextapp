@@ -9,6 +9,7 @@ import UserAvatar from '../_components/UserAvatar'
 import { useSession } from '@/lib/auth-client'
 import Loading from '../../_components/Loading'
 import { redirect } from 'next/navigation'
+import Feedback from './_components/Feedback'
 
 export default function UserPage() {
   const session = useSession()
@@ -42,6 +43,9 @@ export default function UserPage() {
         </li>
         <li className="flex flex-row items-center gap-2">
           <UpdateAvatar />
+        </li>
+        <li>
+          <Feedback />
         </li>
       </ul>
     </div>
