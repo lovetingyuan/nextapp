@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils'
 import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import {
   Command,
@@ -286,6 +287,7 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
                       onSelect={() => toggleOption(option.value)}
                       className="cursor-pointer"
                     >
+                      {/* <Checkbox defaultChecked={isSelected} /> */}
                       <div
                         className={cn(
                           'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary',
@@ -294,7 +296,7 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
                             : 'opacity-50 [&_svg]:invisible'
                         )}
                       >
-                        <CheckIcon className="h-4 w-4" />
+                        <CheckIcon className={`h-4 w-4 text-white dark:text-black `} />
                       </div>
                       {option.icon && (
                         <option.icon className="mr-2 h-4 w-4 text-muted-foreground" />

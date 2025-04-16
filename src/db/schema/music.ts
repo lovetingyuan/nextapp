@@ -1,13 +1,4 @@
-import {
-  pgTable,
-  serial,
-  text,
-  integer,
-  timestamp,
-  boolean,
-  primaryKey,
-  varchar,
-} from 'drizzle-orm/pg-core'
+import { pgTable, serial, text, integer, timestamp, primaryKey, varchar } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm'
 import { user } from './auth-schema'
 
@@ -126,25 +117,4 @@ export const playlistSongsRelations = relations(playlistSongs, ({ one }) => ({
     fields: [playlistSongs.songId],
     references: [songs.id],
   }),
-}))
-
-// 反馈表
-export const feedbacks = pgTable('feedbacks', {
-  id: serial('id').primaryKey(),
-  content: text('content').notNull(),
-  resolved: boolean('resolved').default(false),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-  userId: text('user_id').notNull(),
-})
-
-// 反馈关系定义,一个用户可以有多条反馈
-export const feedbacksRelations = relations(feedbacks, ({ one }) => ({
-  user: one(user, {
-    fields: [feedbacks.userId],
-    references: [user.id],
-  }),
-}))
-
-export const userFeedbacksRelations = relations(user, ({ many }) => ({
-  feedbacks: many(feedbacks),
 }))

@@ -21,6 +21,9 @@ export default function UserPage() {
       </div>
     )
   }
+  if (session.error) {
+    return <div>出错了，请刷新重试 </div>
+  }
   if (!user) {
     redirect('/music/app/sign-in')
   }

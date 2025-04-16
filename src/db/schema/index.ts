@@ -10,3 +10,7 @@ export {
   playlistSongsRelations,
 } from './music'
 // ---------music end---------
+
+// ---------user start---------
+export { feedbacks, feedbacksRelations, userFeedbacksRelations } from './user'
+// ---------user end---------

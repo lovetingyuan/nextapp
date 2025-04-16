@@ -29,6 +29,13 @@
       "when": 1744655395488,
       "tag": "0003_fantastic_selene",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1744791376196,
+      "tag": "0004_early_taskmaster",
+      "breakpoints": true
     }
   ]
 }
