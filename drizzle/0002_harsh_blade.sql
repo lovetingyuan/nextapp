@@ -1,1 +1,0 @@
-ALTER TABLE "songs" ADD COLUMN "last_played_at" timestamp;

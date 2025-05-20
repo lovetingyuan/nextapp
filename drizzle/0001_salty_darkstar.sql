@@ -1,1 +1,0 @@
-ALTER TABLE "songs" RENAME COLUMN "file_url" TO "file_name";
